@@ -4,7 +4,7 @@ Addtional data collection API for National Students Informaiton System
 
 ## Security Vulnerabilities
 
-If you discover a security vulnerability within Lumen, please send an e-mail to Taylor Otwell at taylor@laravel.com. All security vulnerabilities will be promptly addressed.
+If you discover a security vulnerability within Lumen, please send an e-mail to Taylor Otwell at nizar@opensource.lk . All security vulnerabilities will be promptly addressed.
 
 ## License
 
