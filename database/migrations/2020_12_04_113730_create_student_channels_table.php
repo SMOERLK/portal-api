@@ -17,6 +17,7 @@ class CreateStudentChannelsTable extends Migration
             $table->id();
             $table->integer('channel_id');
             $table->integer('student_id');
+            $table->unique(['student_id','channel_id'],'student_channel_id');
             $table->timestamps();
         });
     }

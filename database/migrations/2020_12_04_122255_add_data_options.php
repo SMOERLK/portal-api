@@ -62,7 +62,7 @@ class AddDataOptions extends Migration
             ],
 
         ];
-        DB::table('config_item_options')->insert($data);
+        // DB::table('config_item_options')->insert($data);
     }
 
     /**

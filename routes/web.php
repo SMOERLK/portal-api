@@ -20,7 +20,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     // Matches "/api/register
     $router->post('login', 'AuthController@login');
     $router->get('students', 'StudentsController@list');
-    $router->post('students', 'StudentsController@update');
+    $router->post('students/{id}', 'StudentsController@update');
     $router->get('institutions','InstitutionsController@list');
     $router->get('profile', 'UserController@profile');
     

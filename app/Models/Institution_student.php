@@ -74,12 +74,22 @@ class Institution_student extends Base_Model
         return $this->hasOne('App\Models\Student_additional_data','student_id','student_id','=');
     }
 
+    /**
+     * Student TV channel access
+     *
+     * @return void
+     */
     public function TvChannels(){
         return $this->hasMany('App\Models\Student_channels','student_id','student_id','=')
         ->join('config_item_options','student_channels.channel_id','config_item_options.id')
         ->where('config_item_options.option_type','tv_channels');
     }
 
+    /**
+     * Student Radio channel access
+     *
+     * @return void
+     */
     public function RadioChannels(){
         return $this->hasMany('App\Models\Student_channels','student_id','student_id','=')
         ->join('config_item_options','config_item_options.id','student_channels.channel_id')
