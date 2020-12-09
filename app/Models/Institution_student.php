@@ -81,6 +81,7 @@ class Institution_student extends Base_Model
      */
     public function TvChannels(){
         return $this->hasMany('App\Models\Student_channels','student_id','student_id','=')
+        ->select('student_channels.id','config_item_options.option_type','config_item_options.id')
         ->join('config_item_options','student_channels.channel_id','config_item_options.id')
         ->where('config_item_options.option_type','tv_channels');
     }
@@ -92,6 +93,7 @@ class Institution_student extends Base_Model
      */
     public function RadioChannels(){
         return $this->hasMany('App\Models\Student_channels','student_id','student_id','=')
+        ->select('student_channels.id','config_item_options.option_type','config_item_options.id')
         ->join('config_item_options','config_item_options.id','student_channels.channel_id')
         ->where('config_item_options.option_type','radio_channels');
     }
