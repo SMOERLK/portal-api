@@ -52,6 +52,7 @@ class Student_additional_data extends Model  {
                 $data->type_of_device = $additional_data['type_of_device'];
                 $data->type_of_device_at_home = $additional_data['type_of_device_at_home'];
                 $data->internet_at_home = $additional_data['internet_at_home'];
+                $data->electricity_at_home = $additional_data['electricity_at_home'];
                 $data->internet_device = $additional_data['internet_device'];
                 $data->institution_id = $additional_data['institution_id'];
                 $data->tv_at_home = $additional_data['tv_at_home'];

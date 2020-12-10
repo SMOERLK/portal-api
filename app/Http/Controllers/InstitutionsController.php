@@ -61,8 +61,8 @@ class InstitutionsController extends Controller{
 
         $userInstitutions = array_column($userInstitutions, 'institution_id');
         if (in_array($institutionId, $userInstitutions)) {
-            //TODO Need to create School_additional_data class
-            /*School_additional_data::CreateOrUpdate($additional_data);*/
+            
+            School_additional_data::CreateOrUpdate($additional_data);
             array_walk($tv_channels, School_channels::class . '::CreateOrUpdate', 'tv');
             array_walk($radio_channels, School_channels::class . '::CreateOrUpdate', 'radio');
             $response = [
@@ -88,6 +88,7 @@ class InstitutionsController extends Controller{
             'institution_id' => 'required|integer',
             'additional_data.has_internet_connection' => 'required|boolean',
             'additional_data.has_electicity' => 'required|boolean',
+            'additional_data.has_telephone' => 'required|boolean',
             'tv_channels.*.channel_id' => 'in:103,104',
             'radio_channels.*.channel_id' => 'in:105',
         ];
