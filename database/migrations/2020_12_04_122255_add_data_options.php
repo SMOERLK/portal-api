@@ -236,7 +236,7 @@ class AddDataOptions extends Migration
                 'id' => 128,
                 'option_type' => 'tv_channels',
                 'option' => 'Hiru TV',
-                'value' => 'hiru TV_tv',
+                'value' => 'hiru_tv',
                 'visible' => 1,
                 'order' => 1
             ],
