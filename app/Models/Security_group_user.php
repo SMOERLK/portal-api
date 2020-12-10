@@ -65,9 +65,10 @@ class Security_group_user extends Model  {
         return $this->belongsTo('App\Models\Institution_staff','security_user_id','staff_id');
     }
 
-    public function institution_group(){
-        return $this->hasMany('App\Models\Security_group_institution','security_group_id','security_group_id')
-            ->with(['institution','institution_classes']);
+    public function UserInstitutions(){
+        return $this->hasMany('App\Models\Security_group_institution','security_group_id','security_group_id');
+        // ->select('*.institution_id');
+            // ->with('Institution');
     }
 
 

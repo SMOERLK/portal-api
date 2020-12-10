@@ -24,8 +24,7 @@ class UserController extends Controller
      */
     public function profile()
     {
-        //$request->user()->permissions[0]
-        return response()->json(['user' => Auth::user()->zonal_cordinator], 200);
+        return response()->json(['user' => Auth::user()], 200);
     }
 
 }

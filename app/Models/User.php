@@ -71,33 +71,16 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     protected $dates = ['email_verified_at'];
 
 
-    public function permissions(){
-        return $this->hasMany('App\Models\Security_group_user','security_user_id','id')
-             ->where('security_group_users.security_role_id','=',5)
-             ->with(['security_group_institution','institution_staff','security_group'  , 'staff_class','institution_group' , 'roles']);
+    public function Institutions(){
+        return $this->belongsTo('App\Models\Institution','institution_id');
     }
 
-    public function principal(){
-        return $this->hasMany('App\Models\Security_group_user','security_user_id','id')
-            ->where('security_group_users.security_role_id','=',4)
-            ->with(['security_group_institution','institution_staff','security_group'  , 'staff_class','institution_group' , 'roles']);
+    public function SecurityGroup(){
+        return $this->hasOne('App\Models\Security_group_user','security_user_id','id')
+        ->where('security_role_id',14)
+        ->with('UserInstitutions');
     }
 
-    public function zonal_cordinator(){
-        return $this->hasMany('App\Models\Security_group_user','security_user_id','id')
-            ->where('security_group_users.security_role_id','=',3)
-            ->with(['security_group_institution','institution_staff','security_group'  , 'staff_class','institution_group' , 'roles']);
-    }
-
-
-    public function institution_class_teacher(){
-        return $this->hasMany('App\Models\Institution_staff','staff_id','id')
-            ->with(['staff_class']);
-    }
-
-    public function teacher_classes(){
-        return $this->hasMany('App\Models\Institution_class','staff_id','id');
-    }
 
     public function findForPassport($username) {
         return self::where('username', $username)->first(); // change column name whatever you use in credentials
