@@ -241,21 +241,6 @@ class AddDataOptions extends Migration
                 'order' => 1
             ],
 
-
-
-
-            //TODO: List all TV channels
-            [
-                'id' => 104,
-                'option_type' => 'tv_channels',
-                'option' => 'Hiru TV',
-                'value' => 'hiru_tv',
-                'visible' => 1,
-                'order' => 2
-            ],
-
-
-
             //TODO: List all radio channels
             [
                 'id' => 129,
