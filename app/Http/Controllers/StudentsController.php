@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Institution_student;
+use App\Models\School_channels;
 use App\Models\Student_additional_data;
 use App\Models\Student_channels;
 use Illuminate\Support\Facades\Auth;
@@ -83,24 +84,20 @@ class StudentsController extends Controller
         $radio_channels = $request->input('radio_channels');
         $additional_data = $request->input('additional_data');
 
-        //include all validations
+
+        //Validate all inputs
         $this->validate($request, $this->rules());
 
-        foreach ($tv_channels as $tv_channel){
-            
-        }
-       
+         //Delete all deleted channels
+        $this->deleteChannels($request); 
 
         $userInstitutions = Auth::user()->SecurityGroup->UserInstitutions->toArray();
 
         $userInstitutions = array_column($userInstitutions, 'institution_id');
         if (in_array($institutionId, $userInstitutions)) {
-
             Student_additional_data::CreateOrUpdate($additional_data);
             array_walk($tv_channels, Student_channels::class . '::CreateOrUpdate', 'tv');
             array_walk($radio_channels, Student_channels::class . '::CreateOrUpdate', 'radio');
-
-
             $response = [
                 'student_profile' => $profile,
                 'additional_data' => $additional_data,
@@ -120,6 +117,7 @@ class StudentsController extends Controller
      * @return array
      */
     public function rules(){
+        //TODO Need to add list of channels and devices for validation
         $rules = [
             'institution_id' => 'required|integer',
             'additional_data.type_of_device'=> 'required|integer|in:107',
@@ -132,5 +130,22 @@ class StudentsController extends Controller
             'radio_channels.*.channel_id' => 'in:105',
         ];
         return $rules;
+    }
+
+    /**
+     * Delete all channels by reading new channels object array
+     *
+     * @param [type] $request
+     * @return void
+     */
+    public function deleteChannels($request){
+        $tv_channels = $request->input('tv_channels');
+        $radio_channels = $request->input('radio_channels');
+        $studentId =  $request->input('student_id');
+        $all_channels = Student_channels::select('channel_id')->where('student_id',$studentId)->get()->toArray();
+        $all_channels = array_column($all_channels,'channel_id');
+        $updated_channels = array_column(array_merge($tv_channels,$radio_channels),'channel_id');
+        $deleted_channels = array_diff($all_channels,$updated_channels);
+        Student_channels::where('student_id',$studentId)->whereIn('channel_id',$deleted_channels)->delete();
     }
 }
