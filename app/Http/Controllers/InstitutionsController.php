@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Institution;
 use App\Http\Controllers\Controller;
+use App\Models\School_channels;
+use App\Models\School_utilities;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request as HttpRequest;
 
@@ -69,7 +71,7 @@ class InstitutionsController extends Controller{
         $userInstitutions = array_column($userInstitutions, 'institution_id');
         if (in_array($institutionId, $userInstitutions)) {
             
-            School_additional_data::CreateOrUpdate($additional_data);
+            School_utilities::CreateOrUpdate($additional_data);
             array_walk($tv_channels, School_channels::class . '::CreateOrUpdate', 'tv');
             array_walk($radio_channels, School_channels::class . '::CreateOrUpdate', 'radio');
           
@@ -93,7 +95,7 @@ class InstitutionsController extends Controller{
     public function rules(){
         //TODO Need to add list of channels and devices for validation
         $rules = [
-            'institution_id' => 'required|integer',
+            'id' => 'required|integer',
             'additional_data.has_internet_connection' => 'required|boolean',
             'additional_data.has_electicity' => 'required|boolean',
             'additional_data.has_telephone' => 'required|boolean',
@@ -101,6 +103,18 @@ class InstitutionsController extends Controller{
             'radio_channels.*.channel_id' => 'in:105',
         ];
         return $rules;
+    }
+
+    public function deleteChannels($request){
+        $tv_channels = $request->input('tv_channels');
+        $radio_channels = $request->input('radio_channels');
+        $institutionId =  $request->input('id');
+        $all_channels = School_channels::select('channel_id')->where('institution_id',$institutionId)->get()->toArray();
+        $all_channels = array_column($all_channels,'channel_id');
+        $updated_channels = array_column(array_merge($tv_channels,$radio_channels),'channel_id');
+        $deleted_channels = array_diff($all_channels,$updated_channels);
+        School_channels::where('institution_id',$institutionId)->whereIn('channel_id',$deleted_channels)->delete();
+
     }
 
 }
