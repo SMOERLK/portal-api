@@ -33,7 +33,7 @@ class InstitutionsController extends Controller{
         $userInstitutions = array_column($userInstitutions,'institution_id');
 
         $query = Institution::whereIn('id',$userInstitutions)
-        ->with(['TvChannels','RadioChannels']);
+        ->with(['TvChannels','RadioChannels', 'additionalData']);
 
         foreach ($queryStrings as $key => $value) {
             $query->where($key, '=',  $value);
@@ -56,7 +56,7 @@ class InstitutionsController extends Controller{
         $institutionId = $request->input('id');
         $tv_channels = $request->input('tv_channels');
         $radio_channels = $request->input('radio_channels');
-
+        $additional_data = $request->input('additional_data');
 
         //Validate all inputs
         $this->validate($request, $this->rules());
@@ -68,10 +68,13 @@ class InstitutionsController extends Controller{
 
         $userInstitutions = array_column($userInstitutions, 'institution_id');
         if (in_array($institutionId, $userInstitutions)) {
-            
-            array_walk($tv_channels, School_channels::class . '::CreateOrUpdate');
-            array_walk($radio_channels, School_channels::class . '::CreateOrUpdate');
+            //TODO Need to create School_additional_data class
+            /*School_additional_data::CreateOrUpdate($additional_data);*/
+            array_walk($tv_channels, School_channels::class . '::CreateOrUpdate', 'tv');
+            array_walk($radio_channels, School_channels::class . '::CreateOrUpdate', 'radio');
+          
             $response = [
+                'additional_data' => $additional_data,
                 'tv_channels' => $tv_channels,
                 'radio_channels' => $radio_channels
             ];
@@ -91,6 +94,8 @@ class InstitutionsController extends Controller{
         //TODO Need to add list of channels and devices for validation
         $rules = [
             'institution_id' => 'required|integer',
+            'additional_data.has_internet_connection' => 'required|boolean',
+            'additional_data.has_electicity' => 'required|boolean',
             'tv_channels.*.channel_id' => 'in:103,104',
             'radio_channels.*.channel_id' => 'in:105',
         ];

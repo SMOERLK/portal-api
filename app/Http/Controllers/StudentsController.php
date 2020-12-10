@@ -124,6 +124,7 @@ class StudentsController extends Controller
             'additional_data.internet_device' => 'required|integer|in:106',
             'additional_data.tv_at_home' => 'required|boolean',
             'additional_data.satellite_tv__at_home' => 'required|boolean',
+            'additional_data.electricity_at_home' => 'required|boolean',
             'tv_channels.*.channel_id' => 'in:103,104',
             'radio_channels.*.channel_id' => 'in:105',
         ];
