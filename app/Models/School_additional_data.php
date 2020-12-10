@@ -11,7 +11,7 @@ class Student_additional_data extends Model  {
      *
      * @var string
      */
-    protected $table = 'student_additional_data';
+    protected $table = 'school_utilities';
     
     /**
      * Attributes that should be mass-assignable.
@@ -19,7 +19,7 @@ class Student_additional_data extends Model  {
      *
      * @var array
      */
-    protected $fillable = ['student_id', 'type_of_device', 'type_of_device_at_home', 'internet_at_home', 'internet_device', 'institution_id', 'tv_at_home', 'satellite_tv__at_home'];
+    protected $fillable = ['institution_id', 'has_internet_connection', 'has_electricity', 'has_telephone'];
 
     /**
      * The attributes excluded from the model's JSON form.
@@ -44,19 +44,14 @@ class Student_additional_data extends Model  {
 
     public static function CreateOrUpdate($additional_data){
         try {
-            $exist = self::query()->where('student_id',$additional_data['student_id'])->exists();
+            $exist = self::query()->where('institution_id',$additional_data['institution_id'])->exists();
 
             if(!array_key_exists('id', $additional_data) || !$exist ){
-                $data = new Student_additional_data();
-                $data->student_id = $additional_data['student_id'];
-                $data->type_of_device = $additional_data['type_of_device'];
-                $data->type_of_device_at_home = $additional_data['type_of_device_at_home'];
-                $data->internet_at_home = $additional_data['internet_at_home'];
-                $data->electricity_at_home = $additional_data['electricity_at_home'];
-                $data->internet_device = $additional_data['internet_device'];
+                $data = new School_additional_data();
                 $data->institution_id = $additional_data['institution_id'];
-                $data->tv_at_home = $additional_data['tv_at_home'];
-                $data->satellite_tv__at_home = $additional_data['satellite_tv__at_home'];
+                $data->has_internet_connection = $additional_data['has_internet_connection'];
+                $data->has_electricity = $additional_data['has_electricity'];
+                $data->has_telephone = $additional_data['has_telephone'];
                 $data->save();
                 return $data;   
             }else{
