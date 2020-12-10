@@ -44,6 +44,13 @@ class InstitutionsController extends Controller{
         return response()->json(['data' => $data]);
     }
 
+    /**
+     * update School Info
+     *
+     * @param HttpRequest $request
+     * @param [type] $id
+     * @return array
+     */
     public function update(HttpRequest $request, $id)
     {
         $institutionId = $request->input('id');
@@ -62,8 +69,8 @@ class InstitutionsController extends Controller{
         $userInstitutions = array_column($userInstitutions, 'institution_id');
         if (in_array($institutionId, $userInstitutions)) {
             
-            array_walk($tv_channels, School_channels::class . '::CreateOrUpdate', 'tv');
-            array_walk($radio_channels, School_channels::class . '::CreateOrUpdate', 'radio');
+            array_walk($tv_channels, School_channels::class . '::CreateOrUpdate');
+            array_walk($radio_channels, School_channels::class . '::CreateOrUpdate');
             $response = [
                 'tv_channels' => $tv_channels,
                 'radio_channels' => $radio_channels
