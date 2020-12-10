@@ -12,7 +12,7 @@ The Lumen framework is open-sourced software licensed under the [MIT license](ht
 
 ## To run the application
 
-php -S  127.0.0.1:8080 /public
+php -S 127.0.0.1:8080 -t public/
 
 
 

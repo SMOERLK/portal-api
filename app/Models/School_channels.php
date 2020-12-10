@@ -22,4 +22,19 @@ class School_channels extends Model{
     protected $fillable = ['id','channel_id','institution_id','created_at','updated_at'];
 
    
+    public static function CreateOrUpdate($data)
+    {
+        $exist = self::query()->where([
+            'channel_id' => $data['channel_id'],
+            'school_id' => $data['school_id']
+        ])->exists();
+        if (!$exist) {
+            self::create(
+                [
+                    'channel_id' => $data['channel_id'],
+                    'school_id' => $data['school_id']
+                ]
+            );
+        }
+    }
 }
