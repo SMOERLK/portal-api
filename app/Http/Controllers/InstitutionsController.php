@@ -43,4 +43,51 @@ class InstitutionsController extends Controller{
         $data = $query->get();
         return response()->json(['data' => $data]);
     }
+
+    public function update(HttpRequest $request, $id)
+    {
+        $institutionId = $request->input('id');
+        $tv_channels = $request->input('tv_channels');
+        $radio_channels = $request->input('radio_channels');
+
+
+        //Validate all inputs
+        $this->validate($request, $this->rules());
+
+         //Delete all deleted channels
+        $this->deleteChannels($request); 
+
+        $userInstitutions = Auth::user()->SecurityGroup->UserInstitutions->toArray();
+
+        $userInstitutions = array_column($userInstitutions, 'institution_id');
+        if (in_array($institutionId, $userInstitutions)) {
+            
+            array_walk($tv_channels, Institution_channels::class . '::CreateOrUpdate', 'tv');
+            array_walk($radio_channels, Institution_channels::class . '::CreateOrUpdate', 'radio');
+            $response = [
+                'tv_channels' => $tv_channels,
+                'radio_channels' => $radio_channels
+            ];
+
+            return response()->json(['data' => $response]);
+        } else {
+            return response()->json('UnAuthorized');
+        }
+    }
+
+    /**
+     * Implement rules method
+     *
+     * @return array
+     */
+    public function rules(){
+        //TODO Need to add list of channels and devices for validation
+        $rules = [
+            'institution_id' => 'required|integer',
+            'tv_channels.*.channel_id' => 'in:103,104',
+            'radio_channels.*.channel_id' => 'in:105',
+        ];
+        return $rules;
+    }
+
 }
