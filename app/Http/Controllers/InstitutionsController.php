@@ -62,8 +62,8 @@ class InstitutionsController extends Controller{
         $userInstitutions = array_column($userInstitutions, 'institution_id');
         if (in_array($institutionId, $userInstitutions)) {
             
-            array_walk($tv_channels, Institution_channels::class . '::CreateOrUpdate', 'tv');
-            array_walk($radio_channels, Institution_channels::class . '::CreateOrUpdate', 'radio');
+            array_walk($tv_channels, School_channels::class . '::CreateOrUpdate', 'tv');
+            array_walk($radio_channels, School_channels::class . '::CreateOrUpdate', 'radio');
             $response = [
                 'tv_channels' => $tv_channels,
                 'radio_channels' => $radio_channels
