@@ -3,12 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Institution_student;
-use App\Models\School_channels;
 use App\Models\Student_additional_data;
 use App\Models\Student_channels;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request as HttpRequest;
-use Illuminate\Validation\Validator;
 
 class StudentsController extends Controller
 {
@@ -96,8 +94,8 @@ class StudentsController extends Controller
         $userInstitutions = array_column($userInstitutions, 'institution_id');
         if (in_array($institutionId, $userInstitutions)) {
             Student_additional_data::CreateOrUpdate($additional_data);
-            array_walk($tv_channels, Student_channels::class . '::CreateOrUpdate', 'tv');
-            array_walk($radio_channels, Student_channels::class . '::CreateOrUpdate', 'radio');
+            array_walk($tv_channels, Student_channels::class . '::CreateOrUpdate');
+            array_walk($radio_channels, Student_channels::class . '::CreateOrUpdate');
             $response = [
                 'student_profile' => $profile,
                 'additional_data' => $additional_data,
