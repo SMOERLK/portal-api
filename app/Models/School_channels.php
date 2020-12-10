@@ -26,13 +26,13 @@ class School_channels extends Model{
     {
         $exist = self::query()->where([
             'channel_id' => $data['channel_id'],
-            'school_id' => $data['school_id']
+            'institution_id' => $data['institution_id']
         ])->exists();
         if (!$exist) {
             self::create(
                 [
                     'channel_id' => $data['channel_id'],
-                    'school_id' => $data['school_id']
+                    'institution_id' => $data['institution_id']
                 ]
             );
         }

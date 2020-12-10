@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Student_additional_data extends Model  {
+class School_utilities extends Model  {
 
     /**
      * The database table used by the model.
@@ -47,7 +47,7 @@ class Student_additional_data extends Model  {
             $exist = self::query()->where('institution_id',$additional_data['institution_id'])->exists();
 
             if(!array_key_exists('id', $additional_data) || !$exist ){
-                $data = new School_additional_data();
+                $data = new School_utilities();
                 $data->institution_id = $additional_data['institution_id'];
                 $data->has_internet_connection = $additional_data['has_internet_connection'];
                 $data->has_electricity = $additional_data['has_electricity'];

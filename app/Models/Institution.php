@@ -62,4 +62,13 @@ class Institution extends Model  {
         });
     }
 
+    /**
+     * Student additional data information
+     *
+     * @return void
+     */
+    public function additionalData(){
+        return $this->hasOne('App\Models\School_utilities','institution_id','id','=');
+    }
+
 }
