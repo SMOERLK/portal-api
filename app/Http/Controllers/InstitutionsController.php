@@ -89,7 +89,7 @@ class InstitutionsController extends Controller
 
             return response()->json(['data' => $response]);
         } else {
-            return response()->json('UnAuthorized');
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
     }
 
@@ -104,7 +104,7 @@ class InstitutionsController extends Controller
         $rules = [
             'id' => 'required|integer',
             'additional_data.has_internet_connection' => 'required|boolean',
-            'additional_data.has_electicity' => 'required|boolean',
+            'additional_data.has_electricity' => 'required|boolean',
             'additional_data.has_telephone' => 'required|boolean',
             'tv_channels.*.channel_id' => 'in:103,104',
             'radio_channels.*.channel_id' => 'in:105',
