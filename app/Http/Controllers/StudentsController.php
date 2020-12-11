@@ -63,7 +63,7 @@ class StudentsController extends Controller
 
                 return response()->json(['data' => $data]);
             } else {
-                return response()->json('UnAuthorized');
+                return response()->json(['message' => 'Unauthorized'], 401);
             }
         } else {
             return response()->json(['data' => []]);
@@ -109,7 +109,7 @@ class StudentsController extends Controller
 
             return response()->json(['data' => $response]);
         } else {
-            return response()->json('UnAuthorized');
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
     }
 
