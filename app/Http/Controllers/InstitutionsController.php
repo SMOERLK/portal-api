@@ -9,10 +9,11 @@ use App\Models\School_utilities;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request as HttpRequest;
 
-class InstitutionsController extends Controller{
+class InstitutionsController extends Controller
+{
 
 
-     /**
+    /**
      * Instantiate a new UserController instance.
      *
      * @return void
@@ -22,7 +23,8 @@ class InstitutionsController extends Controller{
         $this->middleware('auth');
     }
 
-    public function list(HttpRequest $request){
+    public function list(HttpRequest $request)
+    {
         $queryStrings = $request->except('limit', 'order_by', 'order', 'page', 'count', 'current_page', 'last_page', 'next_page_url', 'per_page', 'previous_page_url', 'total', 'url', 'from', 'to');
 
         $limit = ($request->input('limit') ? $request->input('limit') : '10');
@@ -30,20 +32,24 @@ class InstitutionsController extends Controller{
         $order = ($request->input('order_by') ? $request->input('order_by') : 'desc');
         $page = ($request->input('page') ? $request->input('page') : '1');
 
-        $userInstitutions = Auth::user()->SecurityGroup->UserInstitutions->toArray();
+        if (!is_null(Auth::user()->SecurityGroup)) {
+            $userInstitutions = Auth::user()->SecurityGroup->UserInstitutions->toArray();
 
-        $userInstitutions = array_column($userInstitutions,'institution_id');
+            $userInstitutions = array_column($userInstitutions, 'institution_id');
 
-        $query = Institution::whereIn('id',$userInstitutions)
-        ->with(['TvChannels','RadioChannels', 'additionalData']);
+            $query = Institution::whereIn('id', $userInstitutions)
+                ->with(['TvChannels', 'RadioChannels', 'additionalData']);
 
-        foreach ($queryStrings as $key => $value) {
-            $query->where($key, '=',  $value);
+            foreach ($queryStrings as $key => $value) {
+                $query->where($key, '=',  $value);
+            }
+
+            $data = array();
+            $data = $query->get();
+            return response()->json(['data' => $data]);
+        } else {
+            return response()->json(['data' => []]);
         }
-
-        $data = array();
-        $data = $query->get();
-        return response()->json(['data' => $data]);
     }
 
     /**
@@ -63,18 +69,18 @@ class InstitutionsController extends Controller{
         //Validate all inputs
         $this->validate($request, $this->rules());
 
-         //Delete all deleted channels
-        $this->deleteChannels($request); 
+        //Delete all deleted channels
+        $this->deleteChannels($request);
 
         $userInstitutions = Auth::user()->SecurityGroup->UserInstitutions->toArray();
 
         $userInstitutions = array_column($userInstitutions, 'institution_id');
         if (in_array($institutionId, $userInstitutions)) {
-            
+
             School_utilities::CreateOrUpdate($additional_data);
             array_walk($tv_channels, School_channels::class . '::CreateOrUpdate', 'tv');
             array_walk($radio_channels, School_channels::class . '::CreateOrUpdate', 'radio');
-          
+
             $response = [
                 'additional_data' => $additional_data,
                 'tv_channels' => $tv_channels,
@@ -92,7 +98,8 @@ class InstitutionsController extends Controller{
      *
      * @return array
      */
-    public function rules(){
+    public function rules()
+    {
         //TODO Need to add list of channels and devices for validation
         $rules = [
             'id' => 'required|integer',
@@ -105,16 +112,15 @@ class InstitutionsController extends Controller{
         return $rules;
     }
 
-    public function deleteChannels($request){
+    public function deleteChannels($request)
+    {
         $tv_channels = $request->input('tv_channels');
         $radio_channels = $request->input('radio_channels');
         $institutionId =  $request->input('id');
-        $all_channels = School_channels::select('channel_id')->where('institution_id',$institutionId)->get()->toArray();
-        $all_channels = array_column($all_channels,'channel_id');
-        $updated_channels = array_column(array_merge($tv_channels,$radio_channels),'channel_id');
-        $deleted_channels = array_diff($all_channels,$updated_channels);
-        School_channels::where('institution_id',$institutionId)->whereIn('channel_id',$deleted_channels)->delete();
-
+        $all_channels = School_channels::select('channel_id')->where('institution_id', $institutionId)->get()->toArray();
+        $all_channels = array_column($all_channels, 'channel_id');
+        $updated_channels = array_column(array_merge($tv_channels, $radio_channels), 'channel_id');
+        $deleted_channels = array_diff($all_channels, $updated_channels);
+        School_channels::where('institution_id', $institutionId)->whereIn('channel_id', $deleted_channels)->delete();
     }
-
 }
