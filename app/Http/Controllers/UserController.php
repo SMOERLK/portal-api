@@ -24,7 +24,8 @@ class UserController extends Controller
      */
     public function profile()
     {
-        return response()->json(['user' => Auth::user()], 200);
+        $security = Auth::user()->SecurityGroup;
+        return response()->json(['user' => Auth::user()->load('SecurityGroup')], 200);
     }
 
 }
