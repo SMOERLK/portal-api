@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller
 {
@@ -56,7 +57,7 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-          //validate incoming request 
+        //validate incoming request 
         $this->validate($request, [
             'username' => 'required|string',
             'password' => 'required|string',
@@ -64,14 +65,23 @@ class AuthController extends Controller
 
         $credentials = $request->only(['username', 'password']);
 
-        if (! $token = Auth::attempt($credentials)) {
+        if (!$token = Auth::attempt($credentials)) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
         return $this->respondWithToken($token);
     }
 
-   
+    /**
+     * Refresh a token.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function refresh()
+    {
+        return $this->respondWithToken(auth()->refresh());
+    }
+
 
     /**
      * @return string
