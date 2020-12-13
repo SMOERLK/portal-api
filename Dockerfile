@@ -18,7 +18,7 @@ RUN apt-get install -y \
     libfreetype6-dev \
     g++ \
     nano
-    
+
 RUN apt-get install -y zip libzip-dev \
     && docker-php-ext-configure zip --with-libzip \
      && docker-php-ext-install zip    
@@ -61,5 +61,6 @@ WORKDIR /var/www/html
 RUN chown -R www-data:www-data /var/www
 
 RUN composer install
+RUN php artisan jwt:secret
 
 EXPOSE 80

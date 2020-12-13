@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Institution_student;
-use App\Models\Student_additional_data;
+use App\Models\Institution;
 use App\Models\Student_channels;
+use App\Models\Institution_student;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Student_additional_data;
 use Illuminate\Http\Request as HttpRequest;
 
 class StudentsController extends Controller
@@ -19,6 +20,16 @@ class StudentsController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->userInstitutions = [];
+        if (!is_null(Auth::user()->SecurityGroup)) {
+            $userInstitutions = Auth::user()->SecurityGroup->UserInstitutions->toArray();
+            $userArea = Auth::user()->SecurityGroup->UserAreas->toArray();
+            $this->userArea = array_column($userArea, 'area_id');
+            $institutionsIds = Institution::select('id')->whereIn('area_id',$this->userArea)->get()->toArray();
+            $institutionsIds = array_column($institutionsIds,'id');
+            $this->userInstitutions = array_column($userInstitutions, 'institution_id');
+            $this->userInstitutions = array_merge($this->userInstitutions,$institutionsIds);
+        }
     }
 
     /**
@@ -40,34 +51,23 @@ class StudentsController extends Controller
             $limit = 100;
         }
 
-        if (!is_null(Auth::user()->SecurityGroup)) {
-            $userInstitutions = Auth::user()->SecurityGroup->UserInstitutions->toArray();
 
-            $userInstitutions = array_column($userInstitutions, 'institution_id');
+        $query = Institution_student::query()
+            ->with(['studentProfile', 'TvChannels', 'RadioChannels', 'additionalData'])
+            ->where('institution_id', $this->userInstitutions);
 
-            if (in_array($institutionId, $userInstitutions)) {
-                $query = Institution_student::query()
-                    ->with(['studentProfile', 'TvChannels', 'RadioChannels', 'additionalData'])
-                    ->where('institution_id', $institutionId);
-
-                foreach ($queryStrings as $key => $value) {
-                    $query->where($key, '=',  $value);
-                }
-
-                $query->orderBy($order_by, $order);
-                $query->offset($page);
-                $query->simplePaginate($limit);
-
-                $data = array();
-                $data = $query->get();
-
-                return response()->json(['data' => $data]);
-            } else {
-                return response()->json(['message' => 'Unauthorized'], 401);
-            }
-        } else {
-            return response()->json(['data' => []]);
+        foreach ($queryStrings as $key => $value) {
+            $query->where($key, '=',  $value);
         }
+
+        $query->orderBy($order_by, $order);
+        $query->offset($page);
+        $query->simplePaginate($limit);
+
+        $data = array();
+        $data = $query->get();
+
+        return response()->json(['data' => $data]);
     }
 
 
@@ -92,11 +92,6 @@ class StudentsController extends Controller
 
         //Delete all deleted channels
         $this->deleteChannels($request);
-
-        $userInstitutions = Auth::user()->SecurityGroup->UserInstitutions->toArray();
-
-        $userInstitutions = array_column($userInstitutions, 'institution_id');
-        if (in_array($institutionId, $userInstitutions)) {
             Student_additional_data::CreateOrUpdate($additional_data);
             array_walk($tv_channels, Student_channels::class . '::CreateOrUpdate');
             array_walk($radio_channels, Student_channels::class . '::CreateOrUpdate');
@@ -108,9 +103,7 @@ class StudentsController extends Controller
             ];
 
             return response()->json(['data' => $response]);
-        } else {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
+        } 
     }
 
     /**
@@ -122,7 +115,7 @@ class StudentsController extends Controller
     {
         //TODO Need to add list of channels and devices for validation
         $rules = [
-            'institution_id' => 'required|integer',
+            'institution_id' => 'required|integer|in:'.implode(',',$this->userInstitutions),
             'additional_data.type_of_device' => 'required|integer|in:107',
             'additional_data.type_of_device_at_home' => 'required|integer|in:107',
             'additional_data.internet_at_home' => 'required|boolean',
