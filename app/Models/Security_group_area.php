@@ -1,0 +1,59 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Security_group_area extends Model  {
+
+
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'security_group_areas';
+
+    /**
+     * Attributes that should be mass-assignable.
+     *
+     * @var array
+     */
+    protected $fillable = ['security_group_id', 'area_id', 'created_user_id', 'created'];
+
+    /**
+     * The attributes excluded from the model's JSON form.
+     *
+     * @var array
+     */
+    protected $hidden = [];
+
+    /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array
+     */
+    protected $casts = [];
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = ['modified', 'created', 'created', 'created'];
+
+
+
+    public function Institution(){
+        return $this->belongsTo('App\Models\Institution','institution_id');
+    }
+
+    public function institution_classes(){
+        return $this->hasMany('App\Models\Institution_class','institution_id','institution_id');
+    }
+
+    public function security_group(){
+        return $this->belongsTo('App\Models\Security_group','security_group_id');
+    }
+
+}

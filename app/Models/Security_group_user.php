@@ -67,8 +67,11 @@ class Security_group_user extends Model  {
 
     public function UserInstitutions(){
         return $this->hasMany('App\Models\Security_group_institution','security_group_id','security_group_id');
-        // ->select('*.institution_id');
-            // ->with('Institution');
+
+    }
+
+    public function UserAreas(){
+        return $this->hasMany('App\Models\Security_group_area','security_group_id','security_group_id');
     }
 
 
