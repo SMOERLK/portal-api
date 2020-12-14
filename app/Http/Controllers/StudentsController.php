@@ -80,7 +80,7 @@ class StudentsController extends Controller
      */
     public function update(HttpRequest $request, $id)
     {
-        $institutionId = $request->input('institution_id');
+        $studentId = $request->input('student_id');
         $profile =  $request->input('student_profile');
         $tv_channels = $request->input('tv_channels');
         $radio_channels = $request->input('radio_channels');
@@ -92,17 +92,17 @@ class StudentsController extends Controller
 
         //Delete all deleted channels
         $this->deleteChannels($request);
-            Student_additional_data::CreateOrUpdate($additional_data);
-            array_walk($tv_channels, Student_channels::class . '::CreateOrUpdate');
-            array_walk($radio_channels, Student_channels::class . '::CreateOrUpdate');
-            $response = [
-                'student_profile' => $profile,
-                'additional_data' => $additional_data,
-                'tv_channels' => $tv_channels,
-                'radio_channels' => $radio_channels
-            ];
+        Student_additional_data::CreateOrUpdate($additional_data);
+        array_walk($tv_channels, Student_channels::class . '::CreateOrUpdate',$studentId);
+        array_walk($radio_channels, Student_channels::class . '::CreateOrUpdate',$studentId);
+        $response = [
+            'student_profile' => $profile,
+            'additional_data' => $additional_data,
+            'tv_channels' => $tv_channels,
+            'radio_channels' => $radio_channels
+        ];
 
-            return response()->json(['data' => $response]);
+        return response()->json(['data' => $response]);
         } 
     }
 
@@ -116,15 +116,15 @@ class StudentsController extends Controller
         //TODO Need to add list of channels and devices for validation
         $rules = [
             'institution_id' => 'required|integer|in:'.implode(',',$this->userInstitutions),
-            'additional_data.type_of_device' => 'required|integer|in:107',
-            'additional_data.type_of_device_at_home' => 'required|integer|in:107',
+            'additional_data.type_of_device' => 'required|integer|exists:config_item_options,id,option_type,devices',
+            'additional_data.type_of_device_at_home' => 'required|integer|exists:config_item_options,id,option_type,devices',
             'additional_data.internet_at_home' => 'required|boolean',
-            'additional_data.internet_device' => 'required|integer|in:106',
+            'additional_data.internet_device' => 'required|integer|exists:config_item_options,id,option_type,internet_connection_devices',
             'additional_data.tv_at_home' => 'required|boolean',
             'additional_data.satellite_tv__at_home' => 'required|boolean',
             'additional_data.electricity_at_home' => 'required|boolean',
-            'tv_channels.*.channel_id' => 'in:103,104',
-            'radio_channels.*.channel_id' => 'in:105',
+            'tv_channels.*' => 'exists:config_item_options,id,option_type,tv_channels',
+            'radio_channels.*' =>  'exists:config_item_options,id,option_type,radio_channels',
         ];
         return $rules;
     }

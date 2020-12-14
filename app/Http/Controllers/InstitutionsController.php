@@ -66,8 +66,8 @@ class InstitutionsController extends Controller
      */
     public function update(HttpRequest $request, $id)
     {
-        $tv_channels = $request->input('tv_channels');
-        $radio_channels = $request->input('radio_channels');
+        $tv_channels = $request->input('tv_channels') ? $request->input('tv_channels') : [];
+        $radio_channels = $request->input('radio_channels') ?  $request->input('radio_channels') : [];
         $additional_data = $request->input('additional_data');
 
         //Validate all inputs
@@ -75,10 +75,10 @@ class InstitutionsController extends Controller
 
         //Delete all deleted channels
         $this->deleteChannels($request);
-
+        $institutionId =  $request->input('id');
         School_utilities::CreateOrUpdate($additional_data);
-        array_walk($tv_channels, School_channels::class . '::CreateOrUpdate', 'tv');
-        array_walk($radio_channels, School_channels::class . '::CreateOrUpdate', 'radio');
+        array_walk($tv_channels, School_channels::class . '::CreateOrUpdate', $institutionId);
+        array_walk($radio_channels, School_channels::class . '::CreateOrUpdate',  $institutionId);
 
         $response = [
             'additional_data' => $additional_data,
@@ -86,7 +86,7 @@ class InstitutionsController extends Controller
             'radio_channels' => $radio_channels
         ];
 
-        return response()->json(['data' => $response]);
+        return response()->json(['message' => 'Success','data' => $response]);
     }
 
     /**
@@ -102,20 +102,20 @@ class InstitutionsController extends Controller
             'additional_data.has_internet_connection' => 'required|boolean',
             'additional_data.has_electricity' => 'required|boolean',
             'additional_data.has_telephone' => 'required|boolean',
-            'tv_channels.*.channel_id' => 'in:103,104',
-            'radio_channels.*.channel_id' => 'in:105',
+            'tv_channels.*' => 'exists:config_item_options,id,option_type,tv_channels',
+            'radio_channels.*' =>  'exists:config_item_options,id,option_type,radio_channels',
         ];
         return $rules;
     }
 
     public function deleteChannels($request)
     {
-        $tv_channels = $request->input('tv_channels');
-        $radio_channels = $request->input('radio_channels');
+        $tv_channels = $request->input('tv_channels') ? $request->input('tv_channels') : [];
+        $radio_channels = $request->input('radio_channels') ?  $request->input('radio_channels') : [];
         $institutionId =  $request->input('id');
         $all_channels = School_channels::select('channel_id')->where('institution_id', $institutionId)->get()->toArray();
         $all_channels = array_column($all_channels, 'channel_id');
-        $updated_channels = array_column(array_merge($tv_channels, $radio_channels), 'channel_id');
+        $updated_channels = array_merge($tv_channels, $radio_channels);
         $deleted_channels = array_diff($all_channels, $updated_channels);
         School_channels::where('institution_id', $institutionId)->whereIn('channel_id', $deleted_channels)->delete();
     }
