@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Institution_student;
-use App\Models\Student_additional_data;
+use App\Models\Institution;
 use App\Models\Student_channels;
+use App\Models\Institution_student;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Student_additional_data;
 use Illuminate\Http\Request as HttpRequest;
 
 class StudentsController extends Controller
@@ -19,6 +20,16 @@ class StudentsController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->userInstitutions = [];
+        if (!is_null(Auth::user()->SecurityGroup)) {
+            $userInstitutions = Auth::user()->SecurityGroup->UserInstitutions->toArray();
+            $userArea = Auth::user()->SecurityGroup->UserAreas->toArray();
+            $this->userArea = array_column($userArea, 'area_id');
+            $institutionsIds = Institution::select('id')->whereIn('area_id',$this->userArea)->get()->toArray();
+            $institutionsIds = array_column($institutionsIds,'id');
+            $this->userInstitutions = array_column($userInstitutions, 'institution_id');
+            $this->userInstitutions = array_merge($this->userInstitutions,$institutionsIds);
+        }
     }
 
     /**
@@ -40,34 +51,23 @@ class StudentsController extends Controller
             $limit = 100;
         }
 
-        if (!is_null(Auth::user()->SecurityGroup)) {
-            $userInstitutions = Auth::user()->SecurityGroup->UserInstitutions->toArray();
 
-            $userInstitutions = array_column($userInstitutions, 'institution_id');
+        $query = Institution_student::query()
+            ->with(['studentProfile', 'TvChannels', 'RadioChannels', 'additionalData'])
+            ->where('institution_id', $this->userInstitutions);
 
-            if (in_array($institutionId, $userInstitutions)) {
-                $query = Institution_student::query()
-                    ->with(['studentProfile', 'TvChannels', 'RadioChannels', 'additionalData'])
-                    ->where('institution_id', $institutionId);
-
-                foreach ($queryStrings as $key => $value) {
-                    $query->where($key, '=',  $value);
-                }
-
-                $query->orderBy($order_by, $order);
-                $query->offset($page);
-                $query->simplePaginate($limit);
-
-                $data = array();
-                $data = $query->get();
-
-                return response()->json(['data' => $data]);
-            } else {
-                return response()->json(['message' => 'Unauthorized'], 401);
-            }
-        } else {
-            return response()->json(['data' => []]);
+        foreach ($queryStrings as $key => $value) {
+            $query->where($key, '=',  $value);
         }
+
+        $query->orderBy($order_by, $order);
+        $query->offset($page);
+        $query->simplePaginate($limit);
+
+        $data = array();
+        $data = $query->get();
+
+        return response()->json(['data' => $data]);
     }
 
 
@@ -80,7 +80,7 @@ class StudentsController extends Controller
      */
     public function update(HttpRequest $request, $id)
     {
-        $institutionId = $request->input('institution_id');
+        $studentId = $request->input('student_id');
         $profile =  $request->input('student_profile');
         $tv_channels = $request->input('tv_channels');
         $radio_channels = $request->input('radio_channels');
@@ -92,25 +92,18 @@ class StudentsController extends Controller
 
         //Delete all deleted channels
         $this->deleteChannels($request);
+        Student_additional_data::CreateOrUpdate($additional_data);
+        array_walk($tv_channels, Student_channels::class . '::CreateOrUpdate',$studentId);
+        array_walk($radio_channels, Student_channels::class . '::CreateOrUpdate',$studentId);
+        $response = [
+            'student_profile' => $profile,
+            'additional_data' => $additional_data,
+            'tv_channels' => $tv_channels,
+            'radio_channels' => $radio_channels
+        ];
 
-        $userInstitutions = Auth::user()->SecurityGroup->UserInstitutions->toArray();
-
-        $userInstitutions = array_column($userInstitutions, 'institution_id');
-        if (in_array($institutionId, $userInstitutions)) {
-            Student_additional_data::CreateOrUpdate($additional_data);
-            array_walk($tv_channels, Student_channels::class . '::CreateOrUpdate');
-            array_walk($radio_channels, Student_channels::class . '::CreateOrUpdate');
-            $response = [
-                'student_profile' => $profile,
-                'additional_data' => $additional_data,
-                'tv_channels' => $tv_channels,
-                'radio_channels' => $radio_channels
-            ];
-
-            return response()->json(['data' => $response]);
-        } else {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
+        return response()->json(['data' => $response]);
+        } 
     }
 
     /**
@@ -122,16 +115,16 @@ class StudentsController extends Controller
     {
         //TODO Need to add list of channels and devices for validation
         $rules = [
-            'institution_id' => 'required|integer',
-            'additional_data.type_of_device' => 'required|integer|in:107',
-            'additional_data.type_of_device_at_home' => 'required|integer|in:107',
+            'institution_id' => 'required|integer|in:'.implode(',',$this->userInstitutions),
+            'additional_data.type_of_device' => 'required|integer|exists:config_item_options,id,option_type,devices',
+            'additional_data.type_of_device_at_home' => 'required|integer|exists:config_item_options,id,option_type,devices',
             'additional_data.internet_at_home' => 'required|boolean',
-            'additional_data.internet_device' => 'required|integer|in:106',
+            'additional_data.internet_device' => 'required|integer|exists:config_item_options,id,option_type,internet_connection_devices',
             'additional_data.tv_at_home' => 'required|boolean',
             'additional_data.satellite_tv__at_home' => 'required|boolean',
             'additional_data.electricity_at_home' => 'required|boolean',
-            'tv_channels.*.channel_id' => 'in:103,104',
-            'radio_channels.*.channel_id' => 'in:105',
+            'tv_channels.*' => 'exists:config_item_options,id,option_type,tv_channels',
+            'radio_channels.*' =>  'exists:config_item_options,id,option_type,radio_channels',
         ];
         return $rules;
     }

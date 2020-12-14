@@ -17,7 +17,7 @@ class AddDataOptions extends Migration
         //TODO: add all tv
         $data = [
             [
-                'id' => 101,
+                'id' => 191,
                 'option_type' => 'tv_channels',
                 'option' => 'Rupavahini',
                 'value' => 'rupavahini',
@@ -25,7 +25,7 @@ class AddDataOptions extends Migration
                 'order' => 1
             ],
             [
-                'id' => 102,
+                'id' => 192,
                 'option_type' => 'tv_channels',
                 'option' => 'ITN TV',
                 'value' => 'itn_tv',
@@ -33,7 +33,7 @@ class AddDataOptions extends Migration
                 'order' => 1
             ],
             [
-                'id' => 103,
+                'id' => 193,
                 'option_type' => 'tv_channels',
                 'option' => 'Channel One MTV',
                 'value' => 'channel_one_mtv',
@@ -749,10 +749,10 @@ class AddDataOptions extends Migration
                 'visible' => 1,
                 'order' => 1
             ],
-            
+
 
         ];
-        // DB::table('config_item_options')->insert($data);
+        DB::table('config_item_options')->insert($data);
     }
 
     /**
@@ -762,9 +762,9 @@ class AddDataOptions extends Migration
      */
     public function down()
     {
-       $ids = [103,104,105];
-       DB::table('config_item_options')
-       ->whereIn('id',$ids)
-       ->delete();
+        $ids = range(103, 193);
+        DB::table('config_item_options')
+            ->whereIn('id', $ids)
+            ->delete();
     }
 }

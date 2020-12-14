@@ -77,8 +77,8 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     public function SecurityGroup(){
         return $this->hasOne('App\Models\Security_group_user','security_user_id','id')
-        ->where('security_role_id',14)
-        ->with('UserInstitutions');
+        ->with(['UserInstitutions','UserAreas'])
+        ->where('security_role_id',20);
     }
 
 
