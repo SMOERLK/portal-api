@@ -48,18 +48,16 @@ class Institution extends Model  {
     public function TvChannels(){
         return $this->hasMany('App\Models\School_channels','institution_id')
         ->leftJoin('config_item_options',function($query){
-            $query->on('config_item_options.id','=','school_channels.channel_id')
-            ->where('config_item_options.option_type','tv_channels');
-        });
+            $query->on('config_item_options.id','=','school_channels.channel_id');
+        })->where('config_item_options.option_type','tv_channels');
        
     }
 
     public function RadioChannels(){
         return $this->hasMany('App\Models\School_channels','institution_id')
         ->leftJoin('config_item_options',function($query){
-            $query->on('config_item_options.id','=','school_channels.channel_id')
-            ->where('config_item_options.option_type','radio_channels');
-        });
+            $query->on('config_item_options.id','=','school_channels.channel_id');
+        })->where('config_item_options.option_type','radio_channels');
     }
 
     /**

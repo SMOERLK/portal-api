@@ -61,6 +61,7 @@ WORKDIR /var/www/html
 RUN chown -R www-data:www-data /var/www
 
 RUN composer install
+
 RUN php artisan jwt:secret
 
 EXPOSE 80
