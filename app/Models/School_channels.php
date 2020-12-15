@@ -21,6 +21,8 @@ class School_channels extends Model{
      */
     protected $fillable = ['id','channel_id','institution_id','created_at','updated_at'];
 
+    protected $visible = ['channel_id'];
+
    
     public static function CreateOrUpdate($channelId,$row,$id)
     {
