@@ -62,7 +62,6 @@ class InstitutionsController extends Controller
 
         $data = array();
         $data = $query->get()->toArray();
-        $newArray = array();
         $data = array_map(array($this,'popChannelKey'),$data);
         return response()->json(['data' => $data]);
     }
