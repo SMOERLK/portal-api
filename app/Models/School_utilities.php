@@ -46,7 +46,7 @@ class School_utilities extends Model  {
         try {
             $exist = self::query()->where('institution_id',$additional_data['institution_id'])->exists();
 
-            if(!array_key_exists('id', $additional_data) || !$exist ){
+            if(!$exist ){
                 $data = new School_utilities();
                 $data->institution_id = $additional_data['institution_id'];
                 $data->has_internet_connection = $additional_data['has_internet_connection'];
