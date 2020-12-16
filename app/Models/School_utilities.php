@@ -55,7 +55,7 @@ class School_utilities extends Model  {
                 $data->save();
                 return $data;   
             }else{
-                self::find($additional_data['id'])->update($additional_data);
+                self::find($additional_data['institution_id'])->update($additional_data);
                 return $additional_data;
             }
         } catch (\Throwable $th) {
