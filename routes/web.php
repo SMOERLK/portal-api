@@ -16,8 +16,9 @@
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
+$router->get('/healthz', function () { return 'ok'; });
 $router->group(['prefix' => 'api'], function () use ($router) {
-    // Matches "/api/register
+    $router->get('/', function () { return 'MoE API v.1'; });
     $router->post('login', 'AuthController@login');
     $router->put('refresh', 'AuthController@refresh');
     $router->get('profile', 'UserController@profile');
