@@ -45,8 +45,7 @@ class School_utilities extends Model  {
     public static function CreateOrUpdate($additional_data){
         try {
             $exist = self::query()->where('institution_id',$additional_data['institution_id'])->exists();
-
-            if(!array_key_exists('id', $additional_data) || !$exist ){
+            if(!$exist ){
                 $data = new School_utilities();
                 $data->institution_id = $additional_data['institution_id'];
                 $data->has_internet_connection = $additional_data['has_internet_connection'];
@@ -55,7 +54,7 @@ class School_utilities extends Model  {
                 $data->save();
                 return $data;   
             }else{
-                self::find($additional_data['id'])->update($additional_data);
+                self::query()->where('institution_id',$additional_data['institution_id'])->update($additional_data);
                 return $additional_data;
             }
         } catch (\Throwable $th) {

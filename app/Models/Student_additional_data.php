@@ -45,8 +45,7 @@ class Student_additional_data extends Model  {
     public static function CreateOrUpdate($additional_data){
         try {
             $exist = self::query()->where('student_id',$additional_data['student_id'])->exists();
-
-            if(!array_key_exists('id', $additional_data) || !$exist ){
+            if(!$exist){
                 $data = new Student_additional_data();
                 $data->student_id = $additional_data['student_id'];
                 $data->type_of_device = $additional_data['type_of_device'];
@@ -56,11 +55,11 @@ class Student_additional_data extends Model  {
                 $data->internet_device = $additional_data['internet_device'];
                 $data->institution_id = $additional_data['institution_id'];
                 $data->tv_at_home = $additional_data['tv_at_home'];
-                $data->satellite_tv__at_home = $additional_data['satellite_tv__at_home'];
+                $data->satellite_tv_at_home = $additional_data['satellite_tv_at_home'];
                 $data->save();
                 return $data;   
             }else{
-                self::find($additional_data['id'])->update($additional_data);
+                self::query()->where('student_id',$additional_data['student_id'])->update($additional_data);
                 return $additional_data;
             }
         } catch (\Throwable $th) {

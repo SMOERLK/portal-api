@@ -45,6 +45,7 @@ class StudentsController extends Controller
         $order_by = ($request->input('order') ? $request->input('order') : 'id');
         $order = ($request->input('order_by') ? $request->input('order_by') : 'desc');
         $page = ($request->input('page') ? $request->input('page') : '1');
+        $institutionsId = ($request->input('institution_id') ? $request->input('institution_id') : 'institution_id');
 
         if ($limit >= 100) {
             $limit = 100;
@@ -53,7 +54,7 @@ class StudentsController extends Controller
 
         $query = Institution_student::query()
             ->with(['studentProfile', 'TvChannels', 'RadioChannels', 'additionalData'])
-            ->where('institution_id', $this->userInstitutions);
+            ->where('institution_id', $institutionsId);
 
         foreach ($queryStrings as $key => $value) {
             $query->where($key, '=',  $value);
@@ -79,8 +80,8 @@ class StudentsController extends Controller
      */
     public function update(HttpRequest $request, $id)
     {
-        $studentId = $request->input('student_id');
         $profile =  $request->input('student_profile');
+        $institutionsId = $request->input('institution_id');
         $tv_channels = $request->input('tv_channels');
         $radio_channels = $request->input('radio_channels');
         $additional_data = $request->input('additional_data');
@@ -91,9 +92,11 @@ class StudentsController extends Controller
 
         //Delete all deleted channels
         $this->deleteChannels($request);
+        $additional_data['student_id'] = $id;
+        $additional_data['institution_id'] =  $institutionsId;
         Student_additional_data::CreateOrUpdate($additional_data);
-        array_walk($tv_channels, Student_channels::class . '::CreateOrUpdate', $studentId);
-        array_walk($radio_channels, Student_channels::class . '::CreateOrUpdate', $studentId);
+        array_walk($tv_channels, Student_channels::class . '::CreateOrUpdate',$id);
+        array_walk($radio_channels, Student_channels::class . '::CreateOrUpdate', $id);
 
         $response = [
             'student_profile' => $profile,
@@ -121,7 +124,7 @@ class StudentsController extends Controller
             'additional_data.internet_at_home' => 'required|boolean',
             'additional_data.internet_device' => 'required|integer|exists:config_item_options,id,option_type,internet_connection_devices',
             'additional_data.tv_at_home' => 'required|boolean',
-            'additional_data.satellite_tv__at_home' => 'required|boolean',
+            'additional_data.satellite_tv_at_home' => 'required|boolean',
             'additional_data.electricity_at_home' => 'required|boolean',
             'tv_channels.*' => 'exists:config_item_options,id,option_type,tv_channels',
             'radio_channels.*' =>  'exists:config_item_options,id,option_type,radio_channels',
