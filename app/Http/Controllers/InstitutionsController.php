@@ -21,19 +21,7 @@ class InstitutionsController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->userArea = [];
-        $this->userInstitutions = [];
-        if (!is_null(Auth::user())) {
-            if(!is_null(Auth::user()->SecurityGroup)){
-                $userInstitutions = Auth::user()->SecurityGroup->UserInstitutions->toArray();
-                $userArea = Auth::user()->SecurityGroup->UserAreas->toArray();
-                $this->userArea = array_column($userArea, 'area_id');
-                $institutionsIds = Institution::select('id')->whereIn('area_id',$this->userArea)->get()->toArray();
-                $institutionsIds = array_column($institutionsIds,'id');
-                $this->userInstitutions = array_column($userInstitutions, 'institution_id');
-                $this->userInstitutions = array_merge($this->userInstitutions,$institutionsIds);
-            }
-        }
+        parent::__construct();
     }
 
     public function list(HttpRequest $request)
@@ -49,9 +37,10 @@ class InstitutionsController extends Controller
             $limit = 100;
         }
 
-        $query = Institution::whereIn('id', $this->userInstitutions)
+        $query = 
+        Institution::whereIn('id', $this->userInstitutions)
             ->orWhereIn('area_id', $this->userArea)
-            ->with(['TvChannels', 'RadioChannels', 'additionalData']);
+            ->with(['TvChannels', 'RadioChannels', 'additionalData','classes']);
 
         foreach ($queryStrings as $key => $value) {
             $query->where($key, '=',  $value);
@@ -63,8 +52,8 @@ class InstitutionsController extends Controller
 
         $data = array();
         $data = $query->get()->toArray();
-        $data = array_map(array($this,'popChannelKey'),$data);
-        return response()->json(['data' => $data]);
+        $data = array_map(array($this, 'popChannelKey'), $data);
+        return response()->json(['data' => $data, '$this->userArea' => $this->userArea]);
     }
 
     /**
@@ -84,7 +73,7 @@ class InstitutionsController extends Controller
         $this->validate($request, $this->rules());
 
         //Delete all deleted channels
-        $this->deleteChannels($request,$id);
+        $this->deleteChannels($request, $id);
         $additional_data['institution_id'] = $id;
         School_utilities::CreateOrUpdate($additional_data);
         array_walk($tv_channels, School_channels::class . '::CreateOrUpdate', $id);
@@ -96,7 +85,7 @@ class InstitutionsController extends Controller
             'radio_channels' => $radio_channels
         ];
 
-        return response()->json(['message' => 'Success','data' => $response]);
+        return response()->json(['message' => 'Success', 'data' => $response]);
     }
 
     /**
@@ -108,7 +97,7 @@ class InstitutionsController extends Controller
     {
         //TODO Need to add list of channels and devices for validation
         $rules = [
-            'id' => 'required|integer|in:'.implode(',',$this->userInstitutions),
+            'id' => 'required|integer|in:' . implode(',', $this->userInstitutions),
             'additional_data.has_internet_connection' => 'required|boolean',
             'additional_data.has_electricity' => 'required|boolean',
             'additional_data.has_telephone' => 'required|boolean',
@@ -118,7 +107,7 @@ class InstitutionsController extends Controller
         return $rules;
     }
 
-    public function deleteChannels($request,$institutionId)
+    public function deleteChannels($request, $institutionId)
     {
         $tv_channels = $request->input('tv_channels') ? $request->input('tv_channels') : [];
         $radio_channels = $request->input('radio_channels') ?  $request->input('radio_channels') : [];

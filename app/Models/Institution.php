@@ -69,4 +69,12 @@ class Institution extends Model  {
         return $this->hasOne('App\Models\School_utilities','institution_id','id','=');
     }
 
+    public function grades(){
+        return $this->hasMany('App\Models\Institution_grade','institution_id','id','=');
+    }
+
+    public function classes(){
+        return $this->hasMany('App\Models\Institution_class','institution_id','id','=');
+    }
+
 }

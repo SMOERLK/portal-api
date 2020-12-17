@@ -72,13 +72,15 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
 
     public function Institutions(){
-        return $this->belongsTo('App\Models\Institution','institution_id');
+        return $this->hasMany('App\Models\Security_group_user','security_user_id','id')
+        ->with('UserInstitutions')
+        ->where('security_group_users.security_role_id',20);
     }
 
-    public function SecurityGroup(){
-        return $this->hasOne('App\Models\Security_group_user','security_user_id','id')
-        ->with(['UserInstitutions','UserAreas'])
-        ->where('security_role_id',20);
+    public function Areas(){
+        return $this->hasMany('App\Models\Security_group_user','security_user_id','id')
+        ->with('UserAreas')
+        ->where('security_group_users.security_role_id',20);
     }
 
 

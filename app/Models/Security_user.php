@@ -126,7 +126,7 @@ class Security_user extends Model
 
     public function class()
     {
-        return $this->belongsTo('App\Models\Institution_class_student', 'id', 'student_id');
+        return $this->belongsTo('App\Models\Institution_class_student', 'student_id', 'id');
     }
 
     public function special_needs()
