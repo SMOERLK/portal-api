@@ -56,7 +56,7 @@ class Student_additional_data extends Model  {
                 $data->internet_device = $additional_data['internet_device'];
                 $data->institution_id = $additional_data['institution_id'];
                 $data->tv_at_home = $additional_data['tv_at_home'];
-                $data->satellite_tv__at_home = $additional_data['satellite_tv__at_home'];
+                $data->satellite_tv_at_home = $additional_data['satellite_tv_at_home'];
                 $data->save();
                 return $data;   
             }else{

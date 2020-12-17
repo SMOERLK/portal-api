@@ -122,7 +122,7 @@ class StudentsController extends Controller
             'additional_data.internet_at_home' => 'required|boolean',
             'additional_data.internet_device' => 'required|integer|exists:config_item_options,id,option_type,internet_connection_devices',
             'additional_data.tv_at_home' => 'required|boolean',
-            'additional_data.satellite_tv__at_home' => 'required|boolean',
+            'additional_data.satellite_tv_at_home' => 'required|boolean',
             'additional_data.electricity_at_home' => 'required|boolean',
             'tv_channels.*' => 'exists:config_item_options,id,option_type,tv_channels',
             'radio_channels.*' =>  'exists:config_item_options,id,option_type,radio_channels',
