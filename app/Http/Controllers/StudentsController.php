@@ -44,7 +44,7 @@ class StudentsController extends Controller
 
 
         $query = Institution_student::query()
-            ->with(['studentProfile', 'TvChannels', 'RadioChannels', 'additionalData'])
+            ->with(['studentProfile', 'TvChannels', 'RadioChannels', 'additionalData','class'])
             ->where('institution_id', $institutionsId);
 
         foreach ($queryStrings as $key => $value) {

@@ -124,11 +124,6 @@ class Security_user extends Model
         return $this->hasMany('App\Models\Upload');
     }
 
-    public function class()
-    {
-        return $this->belongsTo('App\Models\Institution_class_student', 'student_id', 'id');
-    }
-
     public function special_needs()
     {
         return $this->hasMany('App\Models\User_special_need', 'id', 'security_user_id');

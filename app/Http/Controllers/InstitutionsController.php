@@ -39,9 +39,7 @@ class InstitutionsController extends Controller
 
         $query = 
         Institution::whereIn('id', $this->userInstitutions)
-            ->orWhereIn('area_id', $this->userArea)
-            ->with(['TvChannels', 'RadioChannels', 'additionalData','classes']);
-
+            ->with(['TvChannels', 'RadioChannels', 'additionalData','classes','grades']);
         foreach ($queryStrings as $key => $value) {
             $query->where($key, '=',  $value);
         }
@@ -53,7 +51,7 @@ class InstitutionsController extends Controller
         $data = array();
         $data = $query->get()->toArray();
         $data = array_map(array($this, 'popChannelKey'), $data);
-        return response()->json(['data' => $data, '$this->userArea' => $this->userArea]);
+        return response()->json(['data' => $data]);
     }
 
     /**
