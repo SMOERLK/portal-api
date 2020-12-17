@@ -67,7 +67,6 @@ class Security_group_user extends Model  {
 
     public function UserInstitutions(){
         return $this->hasMany('App\Models\Security_group_institution','security_group_id','security_group_id');
-
     }
 
     public function UserAreas(){
