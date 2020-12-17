@@ -92,6 +92,7 @@ class StudentsController extends Controller
 
         //Delete all deleted channels
         $this->deleteChannels($request);
+        $additional_data['student_id'] = $id;
         Student_additional_data::CreateOrUpdate($additional_data);
         array_walk($tv_channels, Student_channels::class . '::CreateOrUpdate', $studentId);
         array_walk($radio_channels, Student_channels::class . '::CreateOrUpdate', $studentId);

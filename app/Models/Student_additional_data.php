@@ -46,7 +46,7 @@ class Student_additional_data extends Model  {
         try {
             $exist = self::query()->where('student_id',$additional_data['student_id'])->exists();
 
-            if(!array_key_exists('id', $additional_data) || !$exist ){
+            if(!$exist){
                 $data = new Student_additional_data();
                 $data->student_id = $additional_data['student_id'];
                 $data->type_of_device = $additional_data['type_of_device'];
@@ -60,7 +60,7 @@ class Student_additional_data extends Model  {
                 $data->save();
                 return $data;   
             }else{
-                self::find($additional_data['id'])->update($additional_data);
+                self::query()->where('student_id',$additional_data['student_id'])->update($additional_data);
                 return $additional_data;
             }
         } catch (\Throwable $th) {
