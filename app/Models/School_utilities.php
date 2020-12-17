@@ -45,7 +45,6 @@ class School_utilities extends Model  {
     public static function CreateOrUpdate($additional_data){
         try {
             $exist = self::query()->where('institution_id',$additional_data['institution_id'])->exists();
-
             if(!$exist ){
                 $data = new School_utilities();
                 $data->institution_id = $additional_data['institution_id'];

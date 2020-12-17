@@ -45,7 +45,6 @@ class Student_additional_data extends Model  {
     public static function CreateOrUpdate($additional_data){
         try {
             $exist = self::query()->where('student_id',$additional_data['student_id'])->exists();
-
             if(!$exist){
                 $data = new Student_additional_data();
                 $data->student_id = $additional_data['student_id'];
