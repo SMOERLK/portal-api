@@ -23,7 +23,7 @@ class CreateStudentAdditionalDataTable extends Migration
             $table->integer('institution_id');
             $table->boolean('tv_at_home');
             $table->boolean('electricity_at_home');
-            $table->boolean('satellite_tv__at_home');
+            $table->boolean('satellite_tv_at_home');
             $table->index(['student_id','institution_id'],'institution_student_id');
             $table->unique('student_id');
             $table->timestamps();
