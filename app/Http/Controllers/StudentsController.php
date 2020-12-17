@@ -80,8 +80,8 @@ class StudentsController extends Controller
      */
     public function update(HttpRequest $request, $id)
     {
-        $studentId = $request->input('student_id');
         $profile =  $request->input('student_profile');
+        $institutionsId = $request->input('institution_id');
         $tv_channels = $request->input('tv_channels');
         $radio_channels = $request->input('radio_channels');
         $additional_data = $request->input('additional_data');
@@ -93,9 +93,10 @@ class StudentsController extends Controller
         //Delete all deleted channels
         $this->deleteChannels($request);
         $additional_data['student_id'] = $id;
+        $additional_data['institution_id'] =  $institutionsId;
         Student_additional_data::CreateOrUpdate($additional_data);
-        array_walk($tv_channels, Student_channels::class . '::CreateOrUpdate', $studentId);
-        array_walk($radio_channels, Student_channels::class . '::CreateOrUpdate', $studentId);
+        array_walk($tv_channels, Student_channels::class . '::CreateOrUpdate',$id);
+        array_walk($radio_channels, Student_channels::class . '::CreateOrUpdate', $id);
 
         $response = [
             'student_profile' => $profile,
