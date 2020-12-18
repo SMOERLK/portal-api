@@ -15,6 +15,7 @@ class AddNewSecurityRole extends Migration
     public function up()
     {
         $data = [
+            'id' => 20,
             'name' => 'Data Entry Operator',
             'code' => 'deo',
             'order' => 7,
@@ -34,6 +35,6 @@ class AddNewSecurityRole extends Migration
      */
     public function down()
     {
-        //
+        DB::table('security_roles')->where('id',20)->delete();
     }
 }

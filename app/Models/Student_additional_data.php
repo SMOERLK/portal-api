@@ -63,7 +63,7 @@ class Student_additional_data extends Model  {
                 return $additional_data;
             }
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
         }
     }
 
