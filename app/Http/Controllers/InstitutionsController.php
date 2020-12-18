@@ -39,6 +39,7 @@ class InstitutionsController extends Controller
 
         $query = 
         Institution::whereIn('id', $this->userInstitutions)
+            ->orWhereIn('area_id',$this->userArea)
             ->with(['TvChannels', 'RadioChannels', 'additionalData','classes','grades']);
         foreach ($queryStrings as $key => $value) {
             $query->where($key, '=',  $value);

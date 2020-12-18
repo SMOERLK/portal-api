@@ -87,7 +87,7 @@ class StudentsController extends Controller
         $additional_data['institution_id'] =  $institutionsId;
         Student_additional_data::CreateOrUpdate($additional_data);
         array_walk($tv_channels, Student_channels::class . '::CreateOrUpdate',$id);
-        array_walk($radio_channels, Student_channels::class . '::CreateOrUpdate', $id);
+        array_walk($radio_channels, Student_channels::class . '::CreateOrUpdate',$id);
 
         $response = [
             'student_profile' => $profile,
