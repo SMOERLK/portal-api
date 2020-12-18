@@ -35,6 +35,6 @@ class AddNewSecurityRole extends Migration
      */
     public function down()
     {
-        DB::table('security_roles')->where('id',20)->delete();
+        DB::table('security_roles')->where('code','code')->delete();
     }
 }
