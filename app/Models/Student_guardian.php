@@ -90,4 +90,8 @@ class Student_guardian extends Base_Model  {
         }
     }
 
+    public function profile(){
+        return $this->hasOne('App\Models\Security_user','id','guardian_id','=');
+    }
+
 }

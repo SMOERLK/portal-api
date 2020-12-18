@@ -98,6 +98,24 @@ class Institution_student extends Base_Model
         })->where('config_item_options.option_type','radio_channels');
     }
 
+    public function father(){
+        return $this->hasOne('App\Models\Student_guardian','student_id','student_id')
+        ->where('student_guardians.guardian_relation_id',1)
+        ->with(['profile']);
+    }
+
+    public function mother(){
+        return $this->hasOne('App\Models\Student_guardian','student_id','student_id')
+        ->where('student_guardians.guardian_relation_id',2)
+        ->with(['profile']);
+    }
+
+    public function guardian(){
+        return $this->hasOne('App\Models\Student_guardian','student_id','student_id')
+        ->where('student_guardians.guardian_relation_id',3)
+        ->with(['profile']);
+    }
+
     public function class()
     {
         return $this->belongsTo('App\Models\Institution_class_student', 'student_id', 'student_id');
