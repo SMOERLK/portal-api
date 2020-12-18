@@ -76,6 +76,7 @@ class StudentsController extends Controller
         $tv_channels = $request->input('tv_channels');
         $radio_channels = $request->input('radio_channels');
         $additional_data = $request->input('additional_data');
+        $class = $request->input('class');
 
 
         //Validate all inputs
@@ -93,7 +94,8 @@ class StudentsController extends Controller
             'student_profile' => $profile,
             'additional_data' => $additional_data,
             'tv_channels' => $tv_channels,
-            'radio_channels' => $radio_channels
+            'radio_channels' => $radio_channels,
+            'class' => $class
         ];
 
         return response()->json(['data' => $response]);

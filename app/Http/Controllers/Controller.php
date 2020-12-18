@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Institution;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
@@ -28,6 +29,8 @@ class Controller extends BaseController
                     }, $value['user_areas']);
                 }
             }, $userArea);
+            $institutions = Institution::select('id')->whereIn('area_id',$this->userArea)->get()->toArray();
+            $this->userInstitutions = array_merge(array_column($institutions,'id'),$this->userInstitutions);
         } 
     }
 
