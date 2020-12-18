@@ -20,18 +20,7 @@ class StudentsController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->userInstitutions = [];
-        if (!is_null(Auth::user())) {
-                if(!is_null(Auth::user()->SecurityGroup)){
-                $userInstitutions = Auth::user()->SecurityGroup->UserInstitutions->toArray();
-                $userArea = Auth::user()->SecurityGroup->UserAreas->toArray();
-                $this->userArea = array_column($userArea, 'area_id');
-                $institutionsIds = Institution::select('id')->whereIn('area_id', $this->userArea)->get()->toArray();
-                $institutionsIds = array_column($institutionsIds, 'id');
-                $this->userInstitutions = array_column($userInstitutions, 'institution_id');
-                $this->userInstitutions = array_merge($this->userInstitutions, $institutionsIds);
-            }
-        }
+        parent::__construct();
     }
 
     /**
@@ -55,7 +44,7 @@ class StudentsController extends Controller
 
 
         $query = Institution_student::query()
-            ->with(['studentProfile', 'TvChannels', 'RadioChannels', 'additionalData'])
+            ->with(['studentProfile', 'TvChannels', 'RadioChannels', 'additionalData','class'])
             ->where('institution_id', $institutionsId);
 
         foreach ($queryStrings as $key => $value) {

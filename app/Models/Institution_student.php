@@ -98,6 +98,11 @@ class Institution_student extends Base_Model
         ->where('config_item_options.option_type','radio_channels');
     }
 
+    public function class()
+    {
+        return $this->belongsTo('App\Models\Institution_class_student', 'student_id', 'student_id');
+    }
+
     /**
      *
      */
