@@ -38,18 +38,15 @@ class StudentsController extends Controller
         $page = ($request->input('page') ? $request->input('page') : '1');
         $institutionsId = ($request->input('institution_id') ? $request->input('institution_id') : 'institution_id');
 
-        if ($limit >= 100) {
-            $limit = 100;
-        }
-
-
         $query = Institution_student::query()
-            ->with(['studentProfile', 'TvChannels', 'RadioChannels', 'additionalData','class'])
+            ->with(['studentProfile', 'TvChannels', 'RadioChannels', 'additionalData','class','father','mother','guardian'])
             ->where('institution_id', $institutionsId);
 
         foreach ($queryStrings as $key => $value) {
             $query->where($key, '=',  $value);
         }
+
+        $limit = $query->get()->count();
 
         $query->orderBy($order_by, $order);
         $query->offset($page);
